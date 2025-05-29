@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package products;
+
+service ProductService {
+    rpc GetProduct(GetProductRequest) returns (GetProductResponse);
+}
+
+message GetProductRequest {
+   int32 product_id = 1;
+}
+
+message GetProductResponse {
+    int32 product_id = 1;
+}
+
+
