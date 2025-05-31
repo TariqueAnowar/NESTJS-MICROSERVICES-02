@@ -11,20 +11,28 @@ import { join } from 'path';
 import { PRODUCTS_PACKAGE_NAME } from '../../../types/proto/products';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.GRPC,
-      options: {
-        package: PRODUCTS_PACKAGE_NAME,
-        protoPath: join(__dirname, 'proto/products.proto'),
-      },
+  // Create a hybrid application (HTTP + gRPC)
+  const app = await NestFactory.create(AppModule);
+
+  // Connect microservice (gRPC)
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.GRPC,
+    options: {
+      package: PRODUCTS_PACKAGE_NAME,
+      protoPath: join(__dirname, 'proto/products.proto'),
+      url: '0.0.0.0:5051',
     },
-  );
+  });
 
-  await app.listen();
+  // Start all microservices (gRPC)
+  await app.startAllMicroservices();
 
-  Logger.log(`🚀 Application is listening on gRPC Channel at default port`);
+  // Start HTTP server
+  const port = process.env.PORT || 3001;
+  await app.listen(port);
+
+  Logger.log(`🚀 Application is running on: http://localhost:${port}`);
+  Logger.log(`🚀 gRPC server is listening on default port`);
 }
 
 bootstrap();

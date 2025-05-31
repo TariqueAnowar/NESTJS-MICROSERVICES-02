@@ -11,7 +11,8 @@ message GetProductRequest {
 }
 
 message GetProductResponse {
-    int32 product_id = 1;
+    string communication = 1;
+    int32 product_id = 2;
 }
 
 

@@ -15,6 +15,7 @@ export interface GetProductRequest {
 }
 
 export interface GetProductResponse {
+  communication: string;
   productId: number;
 }
 

@@ -6,6 +6,9 @@
     "targets": {
       "build": {
         "executor": "nx:run-commands",
+        "dependsOn": [
+          "generate-proto-types"
+        ],
         "options": {
           "command": "webpack-cli build",
           "args": [
@@ -44,6 +47,9 @@
         "options": {
           "passWithNoTests": true
         }
+      },
+      "generate-proto-types": {
+        "command": "nx generate-proto-types"
       }
     }
   }
