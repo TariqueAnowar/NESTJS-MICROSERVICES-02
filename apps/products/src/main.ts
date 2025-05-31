@@ -21,7 +21,7 @@ async function bootstrap() {
       package: PRODUCTS_PACKAGE_NAME,
       protoPath: join(__dirname, 'proto/products.proto'),
       url: `0.0.0.0:${process.env.PORT}`,
-      credentials: require('@grpc/grpc-js').credentials.createInsecure(),
+      credentials: require('@grpc/grpc-js').ServerCredentials.createInsecure(),
     },
   });
 
