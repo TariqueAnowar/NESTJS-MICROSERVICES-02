@@ -15,7 +15,7 @@ import { ProductClientController } from './product-client/product-client.control
         options: {
           package: PRODUCTS_PACKAGE_NAME,
           protoPath: join(__dirname, 'proto/products.proto'),
-          url: process.env.PRODUCTS_GRPC_URL,
+          url: process.env.PRODUCTS_GRPC_URL || '0.0.0.0:50051',
         },
       },
     ]),

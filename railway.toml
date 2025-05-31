@@ -1,0 +1,24 @@
+[build]
+builder = "dockerfile"
+
+[deploy]
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+[[services]]
+name = "products-service"
+dockerfile = "Dockerfile.products"
+
+[services.variables]
+NODE_ENV = "production"
+PORT = "3001"
+
+[[services]]
+name = "api-gateway"
+dockerfile = "Dockerfile.api-gateway"
+
+[services.variables]
+NODE_ENV = "production"
+PORT = "3000" 

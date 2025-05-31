@@ -1,0 +1,59 @@
+services:
+  products:
+    build:
+      context: .
+      dockerfile: Dockerfile.products
+    container_name: products-service
+    ports:
+      - '3001:3001' # HTTP port
+      - '50051:50051' # gRPC port
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    networks:
+      - microservices-network
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://localhost:3001/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.api-gateway
+    container_name: api-gateway
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - PRODUCTS_GRPC_URL=products:50051 # gRPC connection to products service
+    depends_on:
+      products:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://localhost:3000/api/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  microservices-network:
+    driver: bridge

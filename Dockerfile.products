@@ -1,0 +1,59 @@
+# Use Node.js 22 LTS as base image
+FROM node:22-alpine AS base
+
+# Install protobuf compiler
+RUN apk add --no-cache protobuf protobuf-dev
+
+# Install dependencies only when needed
+FROM base AS deps
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY nx.json ./
+COPY tsconfig*.json ./
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Build stage
+FROM base AS builder
+WORKDIR /app
+
+# Copy package files and install all dependencies (including dev)
+COPY package*.json ./
+COPY nx.json ./
+COPY tsconfig*.json ./
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Generate proto types first
+RUN npm run generate-proto-types
+
+# Build the Products service
+RUN npx nx build @nestjs-microservices-02/products --prod
+
+# Production stage
+FROM base AS runner
+WORKDIR /app
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nestjs
+
+# Copy built application
+COPY --from=builder --chown=nestjs:nodejs /app/apps/products/dist ./dist
+COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/package.json ./package.json
+
+USER nestjs
+
+# Expose both HTTP and gRPC ports
+EXPOSE 3001 50051
+
+ENV NODE_ENV=production
+ENV PORT=3001
+
+CMD ["node", "dist/main.js"] 
