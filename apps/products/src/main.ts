@@ -20,7 +20,7 @@ async function bootstrap() {
     options: {
       package: PRODUCTS_PACKAGE_NAME,
       protoPath: join(__dirname, 'proto/products.proto'),
-      url: process.env.PRODUCTS_GRPC_URL,
+      url: '0.0.0.0:50051',
     },
   });
 
