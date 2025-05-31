@@ -32,7 +32,7 @@ if (!grpcUrl) {
         options: {
           package: PRODUCTS_PACKAGE_NAME,
           protoPath: join(__dirname, 'proto/products.proto'),
-          url: process.env.PRODUCTS_SERVICE_URL,
+          url: process.env.PRODUCTS_GRPC_URL,
         },
       },
     ]),
