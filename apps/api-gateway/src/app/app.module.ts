@@ -16,9 +16,6 @@ import { ProductClientController } from './product-client/product-client.control
           package: PRODUCTS_PACKAGE_NAME,
           protoPath: join(__dirname, 'proto/products.proto'),
           url: process.env.PRODUCTS_GRPC_URL,
-          credentials: process.env.PRODUCTS_GRPC_URL?.includes('onrender.com')
-            ? require('@grpc/grpc-js').credentials.createSsl() // For external URLs
-            : require('@grpc/grpc-js').credentials.createInsecure(), // For internal URLs
         },
       },
     ]),
